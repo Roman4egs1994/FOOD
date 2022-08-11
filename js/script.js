@@ -107,14 +107,20 @@ document.addEventListener('DOMContentLoaded', () => {
          modalCloseBtn = document.querySelector('[data-close]');
 
 
-         // 1) Функция перебора всех ('[data-modal]') и добавление класса show , удаление класса hide.
-    modalTrigger.forEach(btn => {
-        btn.addEventListener('click', () => {
+    function openModal () {
         modal.classList.add('show');
         modal.classList.remove('hide');
-        document.body.style.overflow = 'hidden';        // запретить overflow
-        });
+        document.body.style.overflow = 'hidden';
+        clearInterval(modalTimerId);
+    }
+
+         // 1) Функция перебора всех ('[data-modal]') и добавление класса show , удаление класса hide.
+    modalTrigger.forEach(btn => {
+        btn.addEventListener('click', openModal);  
     });    
+
+    
+
 
     // 4) Переносим  класс листы в функцию
     function closeModal() {
@@ -141,6 +147,24 @@ document.addEventListener('DOMContentLoaded', () => {
             closeModal();
         }
       });
+
+
+      //Modific MODAL WINDOW
+
+
+      
+      const modalTimerId = setTimeout (openModal, 10000); //Запуск модального окна по таймеру
+
+      function showModalByScroll() {
+        if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
+            openModal();
+            window.removeEventListener('scroll', showModalByScroll); // После одного всплытия , модальное окно перестанет всплывать
+        }
+      }
+
+
+      //Открытие модальног окна по скроллу сайта в самый низ
+      window.addEventListener('scroll', showModalByScroll);
 });     
 
 
