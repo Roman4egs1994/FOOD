@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Timer
     
 
-    const deadline = '2022-08-12';
+    const deadline = '2022-08-17';
 
     function getTimeRemaining(endtime) {  //задача функции получить разницу между датами
         const t = Date.parse(endtime) - Date.parse(new Date()),
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
       
-      const modalTimerId = setTimeout (openModal, 10000); //Запуск модального окна по таймеру
+    //   const modalTimerId = setTimeout (openModal, 10000); //Запуск модального окна по таймеру
 
       function showModalByScroll() {
         if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
@@ -165,6 +165,78 @@ document.addEventListener('DOMContentLoaded', () => {
 
       //Открытие модальног окна по скроллу сайта в самый низ
       window.addEventListener('scroll', showModalByScroll);
+
+      //Класыс
+      //Использовать классы для карточек
+
+      class MenuCard {
+        constructor(src, alt, title, desct, price, parentSelector) { //Cоздаем свойства для конструктора карточки
+            this.src = src;
+            this.alt = alt;
+            this.title = title;
+            this.desct = desct;
+            this.price = price;
+            this.parent = document.querySelector(parentSelector); // В данном свойстве лежит DOM элемент
+            this.transfer = 60; //Курс доллара по соотношению к рублю
+            this.changeToRyb(); //Вызов метода(Перевод доллара в рубли) прямо в конструкторе 
+        }
+        
+        //Перевод из доллара в рубри 
+        changeToRyb() { 
+            this.price = this.price * this.transfer;
+        }
+
+        //Формирование верстки
+        render() {
+            const element = document.createElement('div'); // Создаем элемент "div"
+            element.innerHTML = ` 
+            <div class="menu__item">
+                <img src=${this.src} alt=${this.alt}>
+                <h3 class="menu__item-subtitle">${this.title}</h3>
+                <div class="menu__item-descr">${this.desct}</div>
+                <div class="menu__item-divider"></div>
+                <div class="menu__item-price">
+                    <div class="menu__item-cost">Цена:</div>
+                    <div class="menu__item-total"><span>${this.price}</span> руб/день</div>
+                </div>
+            </div>
+            `;  // Обращаемся к element и динамически формируем структуру
+            this.parent.append(element); //append для помещение элемента 
+        }
+      }
+
+     // Первый вариаент рендера новых карточек 
+    //   const div = new MenuCard();
+    //   div.render();
+
+    //Второй вариант
+    new MenuCard(
+        "img/tabs/vegy.jpg",
+        "vegy",
+        'Меню "Фитнес"',
+        'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+        9,
+        '.menu .container'
+    ).render();
+
+    new MenuCard(
+        "img/tabs/elite.jpg",
+        "elite",
+        'Меню “Премиум”',
+        'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
+        15,
+        '.menu .container'
+    ).render();
+
+    new MenuCard(
+        "img/tabs/post.jpg",
+        "post",
+        'Меню "Постное"',
+        'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
+        7,
+        '.menu .container'
+    ).render();
+
 });     
 
 
