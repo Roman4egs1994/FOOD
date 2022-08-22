@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Timer
     
 
-    const deadline = '2022-08-17';
+    const deadline = '2023-08-17';
 
     function getTimeRemaining(endtime) {  //задача функции получить разницу между датами
         const t = Date.parse(endtime) - Date.parse(new Date()),
@@ -103,8 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //MODAL
    const modalTrigger = document.querySelectorAll('[data-modal]'),
-         modal = document.querySelector('.modal'),
-         modalCloseBtn = document.querySelector('[data-close]');
+         modal = document.querySelector('.modal');
 
 
     function openModal () {
@@ -131,11 +130,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         // 2) Функция закрытия модального окна по нажатию на "крест"
-         modalCloseBtn.addEventListener('click', closeModal);
+        
 
        //3) Закрытие модального окна по нажатию на пустое место .  
     modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
+        if (e.target === modal || e.target.getAttribute('data-close') == '') {
             closeModal();
         }
     });
@@ -153,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
       
-    //   const modalTimerId = setTimeout (openModal, 10000); //Запуск модального окна по таймеру
+    const modalTimerId = setTimeout (openModal, 50000); //Запуск модального окна по таймеру
 
       function showModalByScroll() {
         if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
@@ -225,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'Меню "Фитнес"',
         'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
         9,
-        '.menu .container',
+        '.menu .container'
     ).render();
 
     new MenuCard(
@@ -253,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const forms = document.querySelectorAll('form');
 
     const message = {
-        loading: 'Загрузка',
+        loading: 'img/form/spinner.svg',
         success: 'Cпасибо! Скоро мы с вами свяжемся',
         failure: 'Что-то пошло не так...'
     };
@@ -266,10 +265,13 @@ document.addEventListener('DOMContentLoaded', () => {
         form.addEventListener('submit', (e) => {  //submit - используется каждый раз,когда мы пытаемся отправить какую-то форму
             e.preventDefault(); // Работа по умолчанию
 
-            const statusMessage = document.createElement('div');
-            statusMessage.classList.add('status');
-            statusMessage.textContent = message.loading;
-            form.append(statusMessage);  
+            const statusMessage = document.createElement('img');
+            statusMessage.src = message.loading;
+            statusMessage.style.cssText = `
+                display:block;
+                margin: 0 auto;
+            `;
+            form.insertAdjacentElement('afterend', statusMessage);  
 
             const request = new XMLHttpRequest();
             request.open('POST', 'server.php');
@@ -288,17 +290,41 @@ document.addEventListener('DOMContentLoaded', () => {
             request.addEventListener('load', () => {
                 if (request.status === 200) {
                     console.log(request.response);
-                    statusMessage.textContent = message.success;
+                    showThanksModal(message.success);
                     form.reset(); 
-                    setTimeout(() => {
-                        statusMessage.remove();
-                    }, 2000);
+                    statusMessage.remove();
                 } else {
-                    statusMessage.textContent = message.failure;
+                    showThanksModal(message.failure);
                 }
             });
 
         });
+    }
+
+
+    //FORMS2 
+
+    function showThanksModal() {
+        const prevModalDialog = document.querySelector('.modal__dialog');
+        prevModalDialog.classList.add('hide');
+        openModal();
+
+        const thanksModal = document.createElement('div');
+        thanksModal.classList.add('modal__dialog');
+        thanksModal.innerHTML = `
+           <div class="modal__content">
+                <div class="modal__close" date-close>&times;</div>
+                <div class= "modal__title">${message}</div>
+           </div> 
+        `;
+
+        document.querySelector('.modal').append(thanksModal);
+        setTimeout(() =>{
+            thanksModal.remove();
+            prevModalDialog.classList.add('show');
+            prevModalDialog.classList.remove('hide');
+            closeModal();
+        },4000);
     }
 
 });     
